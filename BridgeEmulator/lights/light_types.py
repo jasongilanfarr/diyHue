@@ -91,6 +91,15 @@ lightTypes["LCX004"]["state"] = {"on": False, "bri": 254,"hue": 8417,"sat": 140,
 lightTypes["LCX004"]["config"] = {"archetype": "huelightstrip", "function": "mixed", "direction": "omnidirectional","startup": {"mode": "safety","configured": False}}
 lightTypes["LCX004"]["dynamics"] = {"speed": 0, "speed_valid": False, "status": "none", "status_values": ["none", "dynamic_palette"]}
 
+## Hue Festavia String Lights
+lightTypes["LCX017"] = {"v1_static": {"type": "Extended color light", "manufacturername": "Signify Netherlands B.V.", "productname": "Hue Festavia string lights", "swversion": "1.116.3", "swconfigid": "B951E43E", "productid": "3241-3127-7871_HG01_PSU03"}}
+lightTypes["LCX017"]["v1_static"]["swupdate"] = {"state": "noupdates", "lastinstall": "2024-10-01T12:00:00"}
+lightTypes["LCX017"]["v1_static"]["capabilities"] = {"certified": True, "control": {"mindimlevel": 100, "maxlumen": 1100, "colorgamuttype": "C", "colorgamut": [[0.6915, 0.3083], [0.1700, 0.7000], [0.1532, 0.0475]], "ct": {"min": 153, "max": 500}}, "streaming": {"renderer": True, "proxy": True}}
+lightTypes["LCX017"]["device"] = {"certified": True, "hardware_platform_type": "100b-122", "manufacturer_name": "Signify Netherlands B.V.", "model_id": "LCX017", "product_archetype": "christmas_tree", "product_name": "Hue Festavia string lights", "software_version": "1.116.3"}
+lightTypes["LCX017"]["state"] = {"on": False, "bri": 254, "hue": 8417, "sat": 140, "effect": "none", "xy": [0.0, 0.0], "ct": 366, "alert": "select", "colormode": "ct", "mode": "homeautomation", "reachable": True, "gradient": {"points": []}}
+lightTypes["LCX017"]["config"] = {"archetype": "stringglobe", "function": "decorative", "direction": "omnidirectional", "startup": {"mode": "safety", "configured": False}}
+lightTypes["LCX017"]["dynamics"] = {"speed": 0, "speed_valid": False, "status": "none", "status_values": ["none", "dynamic_palette"]}
+
 ## Hue Play Lightstrip
 lightTypes["LCX006"] = {"v1_static": {"type": "Extended color light", "manufacturername": "Signify Netherlands B.V.", "productname": "Hue gradient lightstrip","swversion": "1.94.2","swconfigid": "DC0A18AF","productid": "4422-9482-0441_HG01_PSU03"}}
 lightTypes["LCX006"]["v1_static"]["swupdate"] = {"state": "noupdates","lastinstall": "2022-01-13T22:54:51"}
@@ -173,21 +182,22 @@ archetype = {"tableshade":"table_shade",
     "huelightstriptv":"hue_lightstrip_tv",
     "huesigne":"hue_signe",
     "unknownarchetype":"unknown_archetype",
-    "vintagecandlebulb":"vintage_candle_bulb", 
-    "ellipsebulb":"ellipse_bulb", 
-    "trianglebulb":"triangle_bulb", 
-    "smallglobebulb":"small_globe_bulb", 
-    "largeglobebulb":"large_globe_bulb", 
+    "vintagecandlebulb":"vintage_candle_bulb",
+    "ellipsebulb":"ellipse_bulb",
+    "trianglebulb":"triangle_bulb",
+    "smallglobebulb":"small_globe_bulb",
+    "largeglobebulb":"large_globe_bulb",
     "edisonbulb":"edison_bulb",
     "stringlight":"string_light",
-    "huelightstrippc":"hue_lightstrip_pc", 
+    "stringglobe":"string_globe",
+    "huelightstrippc":"hue_lightstrip_pc",
     "huetube":"hue_tube",
-    "pendantspot":"pendant_spot", 
-    "ceilinghorizontal":"ceiling_horizontal", 
-    "ceilingtube":"ceiling_tube", 
-    "upanddown":"up_and_down", 
-    "upanddownup":"up_and_down_up", 
-    "upanddowndown":"up_and_down_down", 
+    "pendantspot":"pendant_spot",
+    "ceilinghorizontal":"ceiling_horizontal",
+    "ceilingtube":"ceiling_tube",
+    "upanddown":"up_and_down",
+    "upanddownup":"up_and_down_up",
+    "upanddowndown":"up_and_down_down",
     "huefloodlightcamera":"hue_floodlight_camera",
     "twilight":"twilight"
     }

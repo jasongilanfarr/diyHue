@@ -200,8 +200,27 @@ class Light():
     def setV2State(self, state):
         v1State = v2StateToV1(state)
         if "effects_v2" in state and "action" in state["effects_v2"]:
-            v1State["effect"] = state["effects_v2"]["action"]["effect"]
-            self.effect = v1State["effect"]
+            action = state["effects_v2"]["action"]
+            if "effect" in action:
+                v1State["effect"] = action["effect"]
+                self.effect = v1State["effect"]
+            params = action.get("parameters", {})
+            if "color" in params:
+                if "xy" in params["color"]:
+                    v1State["xy"] = [
+                        params["color"]["xy"]["x"],
+                        params["color"]["xy"]["y"],
+                    ]
+                    v1State["colormode"] = "xy"
+                elif (
+                    "color_temperature" in params["color"]
+                    and "mirek" in params["color"]["color_temperature"]
+                ):
+                    v1State["colormode"] = "ct"
+                    v1State["ct"] = params["color"]["color_temperature"]["mirek"]
+            if "speed" in params:
+                self.dynamics["speed"] = params["speed"]
+                v1State["speed"] = params["speed"]
         if "effects" in state:
             v1State["effect"] = state["effects"]["effect"]
             self.effect = v1State["effect"]
@@ -286,26 +305,35 @@ class Light():
     def getV2Api(self):
         result = {}
         result["alert"] = {"action_values": ["breathe"]}
+
+        gradient_models = ["LCX002", "915005987201", "LCX004", "LCX006", "LCX017"]
+        color_models = [
+            "LST002", "LCT001", "LCT015", "LCX002", "915005987201",
+            "LCX004", "LCX006", "LCX017", "LCA005", "LLC010", "LCG001"
+        ]
+        festavia_effects = [
+            "no_effect",
+            "candle",
+            "fire",
+            "prism",
+            "sparkle",
+            "glisten",
+            "opal",
+            "cosmos",
+            "enchant",
+            "sunbeam",
+            "underwater"
+        ]
+
         # gradient lights
-        if self.modelid in ["LCX002", "915005987201", "LCX004", "LCX006"]:
-            result["effects"] = {
-                "effect_values": [
-                    "no_effect",
-                    "candle",
-                    "fire"
-                ],
-                "status": self.effect,
-                "status_values": [
-                    "no_effect",
-                    "candle",
-                    "fire"
-                ]
+        if self.modelid in gradient_models:
+            result["gradient"] = {
+                "points": self.state["gradient"]["points"],
+                "points_capable": self.protocol_cfg.get("points_capable", 5)
             }
-            result["gradient"] = {"points": self.state["gradient"]["points"],
-                                  "points_capable": self.protocol_cfg["points_capable"]}
 
         # color lights only
-        if self.modelid in ["LST002", "LCT001", "LCT015", "LCX002", "915005987201", "LCX004", "LCX006", "LCA005", "LLC010", "LCG001"]:
+        if self.modelid in color_models:
             colorgamut = lightTypes[self.modelid]["v1_static"]["capabilities"]["control"]["colorgamut"]
             result["color"] = {
                 "gamut": {
@@ -340,21 +368,23 @@ class Light():
             }
             result["dimming_delta"] = {}
         result["dynamics"] = self.dynamics
-        result["effects"] = {
-            "effect_values": [
-                "no_effect",
-                "candle",
-                "fire",
-                "colorloop"
-            ],
-            "status": self.effect,
-            "status_values": [
+
+        if self.modelid in gradient_models:
+            effect_values = festavia_effects
+        else:
+            effect_values = [
                 "no_effect",
                 "candle",
                 "fire",
                 "colorloop"
             ]
+
+        result["effects"] = {
+            "effect_values": effect_values,
+            "status": self.effect,
+            "status_values": effect_values
         }
+
         if self.protocol == "wled":
             # "none" is a v1-only internal alias for "no_effect"; "sunbeam" is a
             # silent input alias for "sunrise" (see wled.py) -- neither is advertised.
@@ -366,6 +396,28 @@ class Light():
                     "effect_values": wled_effect_values
                 }
             }
+        elif self.modelid in gradient_models:
+            effect_params = {}
+            if self.state.get("colormode") == "xy" and "xy" in self.state:
+                effect_params["color"] = {
+                    "xy": {"x": self.state["xy"][0], "y": self.state["xy"][1]}
+                }
+            elif self.state.get("colormode") == "ct" and "ct" in self.state:
+                effect_params["color"] = {
+                    "color_temperature": {"mirek": self.state["ct"]}
+                }
+            if "speed" in self.dynamics:
+                effect_params["speed"] = self.dynamics["speed"]
+
+            result["effects_v2"] = {
+                "action": {"effect_values": effect_values},
+                "status": {
+                    "effect": self.effect,
+                    "effect_values": effect_values,
+                    "parameters": effect_params
+                }
+            }
+
         result["timed_effects"] = {}
         result["identify"] = {}
         result["id"] = self.id_v2
