@@ -30,6 +30,18 @@ def syncWithLights(off_if_unreachable): #update Hue Bridge lights states
                                 continue
                             light.state.update(newState)
                             light.state["reachable"] = True
+                            if "effect" in newState:
+                                eff = newState.pop("effect")
+                                if not light.state.get("on", True) or not eff or eff == "no_effect":
+                                    light.effect = "no_effect"
+                                else:
+                                    light.effect = "fire" if eff == "fireplace" else eff
+
+                                newState.pop("mode", None)
+                                newState.pop("source", None)
+                                light.genStreamEvent(newState)
+                                
+
                     except Exception as e:
                         from services import homeAssistantWS
                         lock = homeAssistantWS.reconfiguration_lock if protocol_name == 'homeassistant_ws' else nullcontext()
